@@ -11,14 +11,23 @@ export default async function handler(req, res) {
   const apiURL = "https://plus.kipris.or.kr/kipo-api/kipi/trademarkInfoSearchService/getAdvancedSearch";
   const fullURL = `${apiURL}?freeSearch=${encodeURIComponent(freeSearch)}&ServiceKey=${SERVICE_KEY}`;
 
+  // 로그로 출력 (Vercel 로그에서 확인 가능)
+  console.log("[KIPRIS 호출 URL]", fullURL);
+
   try {
     const response = await axios.get(fullURL);
-    res.status(200).send(response.data);
+
+    // 호출 URL과 응답을 함께 반환
+    res.status(200).json({
+      requestedUrl: fullURL,
+      response: response.data
+    });
   } catch (err) {
     console.error("KIPRIS API error:", err.message);
     res.status(500).json({
       error: "KIPRIS API 호출 실패",
-      details: err.message
+      details: err.message,
+      requestedUrl: fullURL
     });
   }
 }
